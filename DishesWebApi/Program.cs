@@ -22,7 +22,7 @@ app.UseHttpsRedirection();
 app.MapGet("/dishes", async (DishesDbContext context, [FromQuery] string? name) =>
 {
     var dishes = await context.Dishes.ToListAsync();
-    return dishes.Where(x => true || x.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).Select(x => x.ToDishDto());
+    return dishes.Where(x => name == null || x.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).Select(x => x.ToDishDto());
 });
 
 app.MapGet("/dishes/{dishId:guid}", async (DishesDbContext context, Guid dishId) =>
