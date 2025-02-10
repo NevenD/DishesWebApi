@@ -1,4 +1,6 @@
 using DishesAPI.DbContexts;
+using DishesWebApi.Mappings;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,26 +19,28 @@ app.UseHttpsRedirection();
 
 
 
-app.MapGet("/dishes", async (DishesDbContext context) =>
+app.MapGet("/dishes", async (DishesDbContext context, [FromQuery] string? name) =>
 {
-    return await context.Dishes.ToListAsync();
+    var dishes = await context.Dishes.ToListAsync();
+    return dishes.Where(x => true || x.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).Select(x => x.ToDishDto());
 });
 
 app.MapGet("/dishes/{dishId:guid}", async (DishesDbContext context, Guid dishId) =>
 {
-    return await context.Dishes.FirstOrDefaultAsync(d => d.Id == dishId);
+    var dish = await context.Dishes.FirstOrDefaultAsync(d => d.Id == dishId);
+    return dish?.ToDishDto();
 });
 
 app.MapGet("/dishes/{dishName}", async (DishesDbContext context, string dishName) =>
 {
-    return await context.Dishes.FirstOrDefaultAsync(d => d.Name == dishName);
+    var dish = await context.Dishes.FirstOrDefaultAsync(d => d.Name == dishName);
+    return dish?.ToDishDto();
 });
 
 app.MapGet("/dishes/{dishId}/ingredients", async (DishesDbContext context, Guid dishId) =>
 {
-    return (await context.Dishes
-    .Include(d => d.Ingredients)
-    .FirstOrDefaultAsync(d => d.Id == dishId))?.Ingredients;
+    var ingredients = (await context.Dishes.Include(d => d.Ingredients).FirstOrDefaultAsync(d => d.Id == dishId))?.Ingredients;
+    return ingredients?.Select(i => i.ToIngredientDto());
 });
 
 // recreate & migrate the database on each run
