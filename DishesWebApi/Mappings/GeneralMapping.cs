@@ -5,7 +5,6 @@ namespace DishesWebApi.Mappings
 {
     public static class GeneralMapping
     {
-
         public static DishDto ToDishDto(this Dish dish)
         {
             return new DishDto
