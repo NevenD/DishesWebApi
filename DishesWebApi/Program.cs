@@ -83,6 +83,22 @@ app.MapPost("/dishes", async Task<CreatedAtRoute<DishDto>> (DishesDbContext cont
     // return TypedResults.Created(linkToDish, dishToReturn);
 });
 
+
+app.MapPut("/dishes/{dishId:Guid}", async Task<Results<NotFound, NoContent>> (DishesDbContext context, Guid dishId, DishPutDto dishPut) =>
+{
+
+    var dish = await context.Dishes.FirstOrDefaultAsync(d => d.Id == dishId);
+    if (dish is null)
+    {
+        return TypedResults.NotFound();
+    }
+
+    dish.Name = dishPut.Name;
+    await context.SaveChangesAsync();
+
+    return TypedResults.NoContent();
+});
+
 // recreate & migrate the database on each run
 using (var serviceScope = app.Services?.GetService<IServiceScopeFactory>()?.CreateScope())
 {
