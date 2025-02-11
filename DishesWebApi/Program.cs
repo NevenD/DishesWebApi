@@ -1,5 +1,7 @@
 using DishesAPI.DbContexts;
+using DishesAPI.Entities;
 using DishesWebApi.DTOs;
+using DishesWebApi.Entities;
 using DishesWebApi.Mappings;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +39,7 @@ app.MapGet("/dishes/{dishId:guid}", async Task<Results<NotFound, Ok<DishDto>>> (
     }
 
     return TypedResults.Ok(dish.ToDishDto());
-});
+}).WithName("GetDish");
 
 app.MapGet("/dishes/{dishName}", async Task<Results<NotFound, Ok<DishDto>>> (DishesDbContext context, string dishName) =>
 {
@@ -59,6 +61,26 @@ app.MapGet("/dishes/{dishId}/ingredients", async Task<Results<NotFound, Ok<IEnum
     }
 
     return TypedResults.Ok(ingredients.Select(i => i.ToIngredientDto()));
+});
+
+// [FromBody] is not needed, just as an example
+app.MapPost("/dishes", async Task<CreatedAtRoute<DishDto>> (DishesDbContext context, [FromBody] DishPostDto dishPost /*LinkGenerator linkGenerator, HttpContext httpContext*/) =>
+{
+
+    var dish = new Dish
+    {
+        Name = dishPost.Name,
+    };
+
+    context.Add(dish);
+    await context.SaveChangesAsync();
+
+    var dishToReturn = dish.ToDishDto();
+
+    return TypedResults.CreatedAtRoute(dishToReturn, "GetDish", new { dishId = dishToReturn.Id });
+
+    //var linkToDish = linkGenerator.GetUriByName(httpContext, "GetDish", new {dishId = dishToReturn.Id });
+    // return TypedResults.Created(linkToDish, dishToReturn);
 });
 
 // recreate & migrate the database on each run
