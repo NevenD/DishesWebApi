@@ -21,9 +21,14 @@ namespace DishesWebApi.Extensions
 
         public static void RegisterIngredientsEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            var ingredientsEndPoints = endpoints.MapGroup("/ingredients");
+            var ingredientsEndPoints = endpoints.MapGroup("/dishes/{dishId:guid}/ingredients");
 
             ingredientsEndPoints.MapGet("", IngredientsHandlers.GetIngredientsAsync);
+
+            ingredientsEndPoints.MapPost("", () =>
+            {
+                throw new NotImplementedException();
+            });
         }
     }
 }
