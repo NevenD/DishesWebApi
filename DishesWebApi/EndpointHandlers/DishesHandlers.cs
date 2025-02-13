@@ -11,10 +11,13 @@ namespace DishesWebApi.EndpointHandlers
 {
     public static class DishesHandlers
     {
-        public static async Task<Ok<IEnumerable<DishDto>>> GetDishesAsync(DishesDbContext context, [FromQuery] string? name)
+        public static async Task<Ok<IEnumerable<DishDto>>> GetDishesAsync(DishesDbContext context, ILogger<DishDto> logger, string? name)
         {
             var dishes = await context.Dishes.ToListAsync();
             var filteredDishes = dishes.Where(x => name == null || x.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).Select(x => x.ToDishDto());
+
+            logger.LogInformation("Getting all dishes");
+
 
             return TypedResults.Ok(filteredDishes);
         }
