@@ -18,10 +18,14 @@ namespace DishesWebApi.Extensions
             dishesEndPoints.MapGet("", DishesHandlers.GetDishesAsync);
             dishesWithGuidIdEndPoints.MapGet("", DishesHandlers.GetDishesByIdAsync).WithName("GetDish");
             dishesEndPoints.MapGet("/{dishName}", DishesHandlers.GetDishesByNameAsync);
-            dishesEndPoints.MapPost("", DishesHandlers.CreateDishAsync);
 
-            dishWithGuidIdEndepointsAndLockFilters.MapPut("", DishesHandlers.UpdateDishAsync);
-            dishWithGuidIdEndepointsAndLockFilters.MapDelete("", DishesHandlers.DeleteDishAsync).AddEndpointFilter<LogNotFoundResponseFilter>();
+            dishesEndPoints.MapPost("", DishesHandlers.CreateDishAsync)
+                .AddEndpointFilter<ValidateAnnotationsFilter>();
+            dishWithGuidIdEndepointsAndLockFilters.MapPut("", DishesHandlers.UpdateDishAsync)
+                .AddEndpointFilter<ValidateAnnotationsFilter>();
+
+            dishWithGuidIdEndepointsAndLockFilters.MapDelete("", DishesHandlers.DeleteDishAsync)
+                .AddEndpointFilter<LogNotFoundResponseFilter>();
 
         }
 
