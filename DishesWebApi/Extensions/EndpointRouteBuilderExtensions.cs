@@ -21,7 +21,7 @@ namespace DishesWebApi.Extensions
             dishesEndPoints.MapPost("", DishesHandlers.CreateDishAsync);
 
             dishWithGuidIdEndepointsAndLockFilters.MapPut("", DishesHandlers.UpdateDishAsync);
-            dishWithGuidIdEndepointsAndLockFilters.MapDelete("", DishesHandlers.DeleteDishAsync);
+            dishWithGuidIdEndepointsAndLockFilters.MapDelete("", DishesHandlers.DeleteDishAsync).AddEndpointFilter<LogNotFoundResponseFilter>();
 
         }
 
