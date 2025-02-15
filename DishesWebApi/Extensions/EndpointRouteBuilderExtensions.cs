@@ -11,14 +11,17 @@ namespace DishesWebApi.Extensions
             var dishesWithGuidIdEndPoints = dishesEndPoints.MapGroup("/{dishId:guid}");
             var ingridentsEndPoints = dishesEndPoints.MapGroup("/ingredients");
 
+            var dishWithGuidIdEndepointsAndLockFilters = dishesWithGuidIdEndPoints.MapGroup("/{dishId:guid}")
+                .AddEndpointFilter(new DishIsLockedFilter(new Guid("fd630a57-2352-4731-b25c-db9cc7601b16")))
+                .AddEndpointFilter(new DishIsLockedFilter(new Guid("98929bd4-f099-41eb-a994-f1918b724b5a")));
+
             dishesEndPoints.MapGet("", DishesHandlers.GetDishesAsync);
             dishesWithGuidIdEndPoints.MapGet("", DishesHandlers.GetDishesByIdAsync).WithName("GetDish");
             dishesEndPoints.MapGet("/{dishName}", DishesHandlers.GetDishesByNameAsync);
             dishesEndPoints.MapPost("", DishesHandlers.CreateDishAsync);
-            dishesWithGuidIdEndPoints.MapPut("", DishesHandlers.UpdateDishAsync)
-                .AddEndpointFilter<RendangDishIsLockedFilter>();
-            dishesWithGuidIdEndPoints.MapDelete("", DishesHandlers.DeleteDishAsync)
-                .AddEndpointFilter<RendangDishIsLockedFilter>(); ;
+
+            dishWithGuidIdEndepointsAndLockFilters.MapPut("", DishesHandlers.UpdateDishAsync);
+            dishWithGuidIdEndepointsAndLockFilters.MapDelete("", DishesHandlers.DeleteDishAsync);
 
         }
 

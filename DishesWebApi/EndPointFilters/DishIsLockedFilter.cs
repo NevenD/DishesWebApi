@@ -1,20 +1,27 @@
 ﻿
 namespace DishesWebApi.EndPointFilters
 {
-    public class RendangDishIsLockedFilter : IEndpointFilter
+    public class DishIsLockedFilter : IEndpointFilter
     {
+        private readonly Guid _lockedDishId;
+
+        public DishIsLockedFilter(Guid lockedDishId)
+        {
+            _lockedDishId = lockedDishId;
+        }
+
+
         public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
         {
             var dishId = context.GetArgument<Guid>(1);
-            var rendangId = new Guid("fd630a57-2352-4731-b25c-db9cc7601b16");
 
-            if (dishId == rendangId)
+            if (dishId == _lockedDishId)
             {
                 return TypedResults.Problem(new()
                 {
                     Status = StatusCodes.Status400BadRequest,
-                    Title = "Rendang is not allowed to be updated",
-                    Detail = "Rendang is a national dish of Indonesia and should not be updated"
+                    Title = "Dish cannot be changed",
+                    Detail = "You cannot update or delete perfection"
                 });
             }
             // invoke the next filter in the pipeline
