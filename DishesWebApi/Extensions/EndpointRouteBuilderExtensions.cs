@@ -7,17 +7,19 @@ namespace DishesWebApi.Extensions
     {
         public static void RegisterDishesEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            var dishesEndPoints = endpoints.MapGroup("/dishes");
+            var dishesEndPoints = endpoints.MapGroup("/dishes")
+                .RequireAuthorization();
             var dishesWithGuidIdEndPoints = dishesEndPoints.MapGroup("/{dishId:guid}");
             var ingridentsEndPoints = dishesEndPoints.MapGroup("/ingredients");
 
             var dishWithGuidIdEndepointsAndLockFilters = endpoints.MapGroup("/dishes/{dishId:guid}")
+                .RequireAuthorization()
                 .AddEndpointFilter(new DishIsLockedFilter(new Guid("fd630a57-2352-4731-b25c-db9cc7601b16")))
                 .AddEndpointFilter(new DishIsLockedFilter(new Guid("98929bd4-f099-41eb-a994-f1918b724b5a")));
 
             dishesEndPoints.MapGet("", DishesHandlers.GetDishesAsync);
             dishesWithGuidIdEndPoints.MapGet("", DishesHandlers.GetDishesByIdAsync).WithName("GetDish");
-            dishesEndPoints.MapGet("/{dishName}", DishesHandlers.GetDishesByNameAsync);
+            dishesEndPoints.MapGet("/{dishName}", DishesHandlers.GetDishesByNameAsync).AllowAnonymous();
 
             dishesEndPoints.MapPost("", DishesHandlers.CreateDishAsync)
                 .AddEndpointFilter<ValidateAnnotationsFilter>();
@@ -31,7 +33,7 @@ namespace DishesWebApi.Extensions
 
         public static void RegisterIngredientsEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            var ingredientsEndPoints = endpoints.MapGroup("/dishes/{dishId:guid}/ingredients");
+            var ingredientsEndPoints = endpoints.MapGroup("/dishes/{dishId:guid}/ingredients").RequireAuthorization();
 
             ingredientsEndPoints.MapGet("", IngredientsHandlers.GetIngredientsAsync);
 
