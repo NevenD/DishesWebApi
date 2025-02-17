@@ -1,6 +1,7 @@
 using DishesAPI.DbContexts;
 using DishesWebApi.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,31 @@ builder.Services.AddAuthorizationBuilder()
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("TokenAuthNeven", new()
+    {
+        Name = "Authorization",
+        Description = "Bearer token",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        In = ParameterLocation.Header
+    });
+    options.AddSecurityRequirement(new()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "TokenAuthNeven",
+                }
+            },
+            new List<string>()
+        }
+    });
+});
 
 
 // token with claims
