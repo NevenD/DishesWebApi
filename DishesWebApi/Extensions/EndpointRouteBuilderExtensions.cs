@@ -22,7 +22,11 @@ namespace DishesWebApi.Extensions
             dishesEndPoints.MapGet("", DishesHandlers.GetDishesAsync);
             dishesWithGuidIdEndPoints.MapGet("", DishesHandlers.GetDishesByIdAsync)
                 .WithName("GetDish")
-                .WithOpenApi()
+                .WithOpenApi(operation =>
+                {
+                    operation.Deprecated = true;
+                    return operation;
+                })
                 .WithSummary("Get Dish by providing an id.")
 .WithDescription("This endpoint retrieves a specific dish by its unique identifier (GUID). " +
 "It returns detailed information about the dish, including its name, ingredients, and any associated metadata. " +
