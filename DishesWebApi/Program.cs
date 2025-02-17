@@ -21,6 +21,10 @@ builder.Services.AddAuthorizationBuilder()
         .RequireClaim("country", "Croatia");
     });
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+
 // token with claims
 //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Ik5ldmVuIiwic3ViIjoiTmV2ZW4iLCJqdGkiOiI2OTM5NTVjNCIsInJvbGUiOiJhZG1pbiIsImNvdW50cnkiOiJDcm9hdGlhIiwiYXVkIjoibWVudS1hcGkiLCJuYmYiOjE3Mzk3MzM0MzYsImV4cCI6MTc0NzQyMzAzNiwiaWF0IjoxNzM5NzMzNDM2LCJpc3MiOiJkb3RuZXQtdXNlci1qd3RzIn0.EOdUrHO9fgv7sbpDawv6h_iQt9LA3iZEnoUPzu_3Zac
 
@@ -51,6 +55,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseAuthentication();
 app.UseAuthorization();
