@@ -1,5 +1,7 @@
 ﻿using DishesWebApi.EndPointFilters;
 using DishesWebApi.EndpointHandlers;
+using DishesWebApi.Entities;
+using System.Net;
 
 namespace DishesWebApi.Extensions
 {
@@ -18,12 +20,24 @@ namespace DishesWebApi.Extensions
                 .AddEndpointFilter(new DishIsLockedFilter(new Guid("98929bd4-f099-41eb-a994-f1918b724b5a")));
 
             dishesEndPoints.MapGet("", DishesHandlers.GetDishesAsync);
-            dishesWithGuidIdEndPoints.MapGet("", DishesHandlers.GetDishesByIdAsync).WithName("GetDish");
+            dishesWithGuidIdEndPoints.MapGet("", DishesHandlers.GetDishesByIdAsync)
+                .WithName("GetDish")
+                .WithOpenApi()
+                .WithSummary("Get Dish by providing an id.")
+.WithDescription("This endpoint retrieves a specific dish by its unique identifier (GUID). " +
+"It returns detailed information about the dish, including its name, ingredients, and any associated metadata. " +
+"Ensure that the provided ID corresponds to an existing dish in the database.");
+
             dishesEndPoints.MapGet("/{dishName}", DishesHandlers.GetDishesByNameAsync).AllowAnonymous();
 
             dishesEndPoints.MapPost("", DishesHandlers.CreateDishAsync)
                 .RequireAuthorization("RequireAdminFromCroatia")
-                .AddEndpointFilter<ValidateAnnotationsFilter>();
+                .AddEndpointFilter<ValidateAnnotationsFilter>()
+                .ProducesValidationProblem((int)HttpStatusCode.BadRequest)
+                .Accepts<DishPostDto>(
+                "application/json",
+                "application/vnd.marvin.dishpostdto+json");
+
             dishWithGuidIdEndepointsAndLockFilters.MapPut("", DishesHandlers.UpdateDishAsync)
                 .AddEndpointFilter<ValidateAnnotationsFilter>();
 
